@@ -33,4 +33,5 @@ Camunda Enterprise Platform 7.13.0-alpha1-ee - 30-days Trial
 ## Lições aprendidas
 
 - Necessidade de conhecer mais a fundo o Camunda;
+
 - A modelagem de processo deve acompanhar a aplicação;

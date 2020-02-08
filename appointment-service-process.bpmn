@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1x5as81" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.6.0">
+  <bpmn:process id="login4" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1" camunda:initiator="starter">
+      <bpmn:outgoing>SequenceFlow_183vr6j</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:exclusiveGateway id="ExclusiveGateway_0d5rdk1">
+      <bpmn:incoming>SequenceFlow_0mddak1</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1eyzclw</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_0jbmeb2</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_0j6laa9</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="SequenceFlow_0mddak1" sourceRef="criar_agendamento" targetRef="ExclusiveGateway_0d5rdk1" />
+    <bpmn:sequenceFlow id="SequenceFlow_183vr6j" sourceRef="StartEvent_1" targetRef="criar_agendamento" />
+    <bpmn:sequenceFlow id="SequenceFlow_1eyzclw" name="Consulta Odontológica" sourceRef="ExclusiveGateway_0d5rdk1" targetRef="documentos_consulta_odontologica">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${servico == "odonto"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_0jbmeb2" name="Consulta Médica" sourceRef="ExclusiveGateway_0d5rdk1" targetRef="documentos_consulta_medica">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${servico == "medica"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_0j6laa9" name="Renovação CNH" sourceRef="ExclusiveGateway_0d5rdk1" targetRef="documentos_renovacao_cnh">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${servico == "cnh"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_15raivj" sourceRef="documentos_consulta_medica" targetRef="ExclusiveGateway_1vnqcuq" />
+    <bpmn:sequenceFlow id="SequenceFlow_1glz5uy" sourceRef="documentos_consulta_odontologica" targetRef="ExclusiveGateway_1vnqcuq" />
+    <bpmn:sequenceFlow id="SequenceFlow_0qgqiuc" sourceRef="documentos_renovacao_cnh" targetRef="ExclusiveGateway_1vnqcuq" />
+    <bpmn:exclusiveGateway id="ExclusiveGateway_1vnqcuq">
+      <bpmn:incoming>SequenceFlow_15raivj</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_1glz5uy</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_0qgqiuc</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0388m3h</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="SequenceFlow_0388m3h" sourceRef="ExclusiveGateway_1vnqcuq" targetRef="em_analise" />
+    <bpmn:exclusiveGateway id="ExclusiveGateway_1om8kkc">
+      <bpmn:incoming>SequenceFlow_0r2s2b8</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1n1rhgc</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_0jbhf2l</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="SequenceFlow_0r2s2b8" sourceRef="em_analise" targetRef="ExclusiveGateway_1om8kkc" />
+    <bpmn:endEvent id="EndEvent_04jbi6n" name="Deferido">
+      <bpmn:incoming>SequenceFlow_1n1rhgc</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_1n1rhgc" name="Deferida" sourceRef="ExclusiveGateway_1om8kkc" targetRef="EndEvent_04jbi6n">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${deferida == "sim"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_0jbhf2l" name="Indeferida" sourceRef="ExclusiveGateway_1om8kkc" targetRef="criar_agendamento">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${deferida == "nao"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:userTask id="criar_agendamento" name="Criar agendamento" camunda:assignee="${ starter }">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="local" label="Local" type="string" />
+          <camunda:formField id="data" label="Data" type="date" />
+          <camunda:formField id="servico" label="Serviço" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_183vr6j</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_0jbhf2l</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0mddak1</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="em_analise" name="Em análise" camunda:candidateGroups="g2">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="deferida" label="Deferida" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_0388m3h</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0r2s2b8</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="documentos_consulta_medica" name="Seleção de documentos da Consulta Médica" camunda:assignee="${ starter }">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="cpf" label="Cpf" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_0jbmeb2</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_15raivj</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="documentos_consulta_odontologica" name="Seleção de documentos da Consulta Odontológica" camunda:assignee="${ starter }">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="cpf" label="Cpf" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_1eyzclw</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1glz5uy</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="documentos_renovacao_cnh" name="Seleção de documentos da Renovação CNH" camunda:assignee="${ starter }">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="cpf" label="Cpf" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_0j6laa9</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0qgqiuc</bpmn:outgoing>
+    </bpmn:userTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="login4">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="179" y="449" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ExclusiveGateway_0d5rdk1_di" bpmnElement="ExclusiveGateway_0d5rdk1" isMarkerVisible="true">
+        <dc:Bounds x="475" y="442" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0mddak1_di" bpmnElement="SequenceFlow_0mddak1">
+        <di:waypoint x="380" y="467" />
+        <di:waypoint x="475" y="467" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_183vr6j_di" bpmnElement="SequenceFlow_183vr6j">
+        <di:waypoint x="215" y="467" />
+        <di:waypoint x="280" y="467" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1eyzclw_di" bpmnElement="SequenceFlow_1eyzclw">
+        <di:waypoint x="525" y="467" />
+        <di:waypoint x="660" y="467" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="560" y="449" width="65" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0jbmeb2_di" bpmnElement="SequenceFlow_0jbmeb2">
+        <di:waypoint x="500" y="442" />
+        <di:waypoint x="500" y="287" />
+        <di:waypoint x="660" y="287" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="474" y="362" width="82" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0j6laa9_di" bpmnElement="SequenceFlow_0j6laa9">
+        <di:waypoint x="500" y="492" />
+        <di:waypoint x="500" y="647" />
+        <di:waypoint x="660" y="647" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="474" y="567" width="83" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_15raivj_di" bpmnElement="SequenceFlow_15raivj">
+        <di:waypoint x="760" y="287" />
+        <di:waypoint x="920" y="287" />
+        <di:waypoint x="920" y="442" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1glz5uy_di" bpmnElement="SequenceFlow_1glz5uy">
+        <di:waypoint x="760" y="467" />
+        <di:waypoint x="895" y="467" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0qgqiuc_di" bpmnElement="SequenceFlow_0qgqiuc">
+        <di:waypoint x="760" y="647" />
+        <di:waypoint x="920" y="647" />
+        <di:waypoint x="920" y="492" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ExclusiveGateway_1gl72u3_di" bpmnElement="ExclusiveGateway_1vnqcuq" isMarkerVisible="true">
+        <dc:Bounds x="895" y="442" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0388m3h_di" bpmnElement="SequenceFlow_0388m3h">
+        <di:waypoint x="945" y="467" />
+        <di:waypoint x="1120" y="467" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ExclusiveGateway_1om8kkc_di" bpmnElement="ExclusiveGateway_1om8kkc" isMarkerVisible="true">
+        <dc:Bounds x="1315" y="442" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0r2s2b8_di" bpmnElement="SequenceFlow_0r2s2b8">
+        <di:waypoint x="1220" y="467" />
+        <di:waypoint x="1315" y="467" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="EndEvent_04jbi6n_di" bpmnElement="EndEvent_04jbi6n">
+        <dc:Bounds x="1322" y="592" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1319" y="635" width="42" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1n1rhgc_di" bpmnElement="SequenceFlow_1n1rhgc">
+        <di:waypoint x="1340" y="492" />
+        <di:waypoint x="1340" y="592" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1334" y="539" width="42" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0jbhf2l_di" bpmnElement="SequenceFlow_0jbhf2l">
+        <di:waypoint x="1340" y="442" />
+        <di:waypoint x="1340" y="100" />
+        <di:waypoint x="330" y="100" />
+        <di:waypoint x="330" y="427" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="810" y="82" width="50" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="UserTask_1ug98v7_di" bpmnElement="criar_agendamento">
+        <dc:Bounds x="280" y="427" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_01xi4md_di" bpmnElement="em_analise">
+        <dc:Bounds x="1120" y="427" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_1phscvq_di" bpmnElement="documentos_consulta_medica">
+        <dc:Bounds x="660" y="247" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_00lrqr7_di" bpmnElement="documentos_consulta_odontologica">
+        <dc:Bounds x="660" y="427" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_1j89ba7_di" bpmnElement="documentos_renovacao_cnh">
+        <dc:Bounds x="660" y="607" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
